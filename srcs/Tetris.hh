@@ -29,7 +29,6 @@ private:
   bool	rotate();
 
   std::map<int, std::function<bool()> > _functions;
-  bool		_on_ground	= false;
   RandomGenerator &_rg		= RandomGenerator::getInstance();
   int		_board[H_CELL_NUMBER + 1][V_CELL_NUMBER] = { {WHITE} }; // WHITE = 0
   Tetromino	_tetromino;
@@ -40,4 +39,5 @@ private:
   SDL_TimerID	_timerID;
   bool		_timerRunning	= false;
   int		_current_time	= 700;
+  unsigned int	_score		= 0;
 };

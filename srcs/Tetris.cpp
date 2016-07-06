@@ -57,10 +57,12 @@ void		Tetris::check_lines() {
   for (x = 0; x < H_CELL_NUMBER + 1; x++)
     _board[x][0] = WHITE;
   if (_linesCleared > 0) {
+    _score		+= _linesCleared * _linesCleared;
+    _linesCleared	= 0;
     _rendering.drawBoard(_board);
+    _rendering.drawScore(_score);
     _rendering.refresh();
     _audioManager.play("destroy");
-    _linesCleared = 0;
   }
   else
     _audioManager.play("pose");
@@ -71,9 +73,7 @@ void		Tetris::check_lines() {
 ** @return wether the tetromino has moved
 */
 bool	Tetris::move_down() {
-  _on_ground	= floor_standing();
-  _tetromino.saveBlocks();
-  if (_on_ground) {
+  if (floor_standing()) {
     for (const auto &block : _tetromino._blocks) {
       ++_board[H_CELL_NUMBER][block.y];
       _board[block.x][block.y] = _tetromino._color;
@@ -82,6 +82,7 @@ bool	Tetris::move_down() {
     new_tetromino();
     return false;
   }
+  _tetromino.saveBlocks();
   for (auto &block : _tetromino._blocks)
     ++block.y;
   return true;

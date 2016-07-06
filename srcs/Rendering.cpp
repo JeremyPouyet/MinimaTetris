@@ -21,8 +21,8 @@ bool Rendering::initialize() {
     return false;
   }
 
-  //Celestial, Italipixel, MKPixelProject
-  if ((_font = TTF_OpenFont("./fonts/Italipixel.ttf", 14)) == NULL) {
+  //Celestial, Italipixel
+  if ((_font = TTF_OpenFont("./fonts/Celestial.ttf", 16)) == NULL) {
     std::cout << "Can't open font: " << TTF_GetError() << std::endl;
     return false;
   }
@@ -38,14 +38,30 @@ bool Rendering::initialize() {
   return true;
 }
 
+void		Rendering::renderText(const std::string &txt, int x, int y) {
+  SDL_Surface*	surface = TTF_RenderText_Blended(_font, txt.c_str(), _black);
+  SDL_Texture*	texture	= SDL_CreateTextureFromSurface(_renderer, surface);
+  SDL_Rect	messageRect = {x, y, 0, 0};
+
+  SDL_QueryTexture(texture, NULL, NULL, &messageRect.w, &messageRect.h);
+  SDL_RenderCopy(_renderer, texture, NULL, &messageRect);
+  SDL_FreeSurface(surface);
+  SDL_DestroyTexture(texture);
+}
+
 void		Rendering::renderText() {
-  SDL_Color	White	= {0, 0, 0, 0};
-  SDL_Surface*	surfaceMessage = TTF_RenderText_Blended(_font, "Next :", White);
-  SDL_Texture*	Message	= SDL_CreateTextureFromSurface(_renderer, surfaceMessage);
-  SDL_Rect	Message_rect = {
-    BOARD_WIDTH + 27, 2, 50, 20
-  };
-  SDL_RenderCopy(_renderer, Message, NULL, &Message_rect);
+  renderText("Next : ", BOARD_WIDTH + 27, 1);
+  renderText("Score : 0", BOARD_WIDTH + 27, NEXT_SQUARE_HEIGHT + 30);
+}
+
+void			Rendering::drawScore(unsigned int score) {
+  std::ostringstream	converter;
+  SDL_Rect		square = {BOARD_WIDTH + 99, NEXT_SQUARE_HEIGHT + 32,
+				  101, 20};
+  setColor(WHITE);
+  SDL_RenderFillRect(_renderer, &square);
+  converter << score;
+  renderText(converter.str(), BOARD_WIDTH + 100, NEXT_SQUARE_HEIGHT + 30);
 }
 
 void	Rendering::drawRightSquare() {
