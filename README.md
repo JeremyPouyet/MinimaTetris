@@ -1,6 +1,3 @@
-# MinimaTetris
-Minimalist Tetris
-
 # MinimaTetris ?
 
 Last night, it was hard for me to sleep, so I created this little Tetris. It's not finished yet, and I'll update it later with an Artificial Intelligence.
