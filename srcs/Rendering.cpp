@@ -1,41 +1,26 @@
 #include "Rendering.hh"
 
-bool Rendering::initialize() {
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS | SDL_INIT_AUDIO) < 0) {
-    std::cout << "SDL could not initialize: " << SDL_GetError() << std::endl;
-    return false;
-  }
-  if (TTF_WasInit() == false && TTF_Init() == -1) {
-    std::cout << "Can't initialize SDF TTF: " << TTF_GetError() << std::endl;
-    return false;
-  }
+Rendering::Rendering() {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS | SDL_INIT_AUDIO) < 0)
+    throw "SDL could not initialize: " + std::string(SDL_GetError());
+  if (TTF_WasInit() == false && TTF_Init() == -1)
+    throw "Can't initialize SDF TTF: " + std::string(TTF_GetError());
   _window = SDL_CreateWindow("Minima tetris", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-  if (_window == NULL) {
-    std::cout << "_Window could not be created: " << SDL_GetError() << std::endl;
-    return false;
-  }
-
+  if (_window == NULL)
+    throw "_Window could not be created: " + std::string(SDL_GetError());
   _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
-  if (_renderer == NULL) {
-    std::cout << "Renderer could not be created: " << SDL_GetError() << std::endl;
-    return false;
-  }
-
+  if (_renderer == NULL)
+    throw "Renderer could not be created: " + std::string(SDL_GetError());
   //Celestial, Italipixel
-  if ((_font = TTF_OpenFont("./fonts/Celestial.ttf", 16)) == NULL) {
-    std::cout << "Can't open font: " << TTF_GetError() << std::endl;
-    return false;
-  }
+  if ((_font = TTF_OpenFont("./fonts/Celestial.ttf", 16)) == NULL)
+    throw "Can't open font: " + std::string(TTF_GetError());
   TTF_SetFontKerning(_font, 0);
-
-  // fill screen with white
   setColor(WHITE);
   SDL_RenderClear(_renderer);
   drawGrid();
   drawRightSquare();
   renderText();
   SDL_RenderPresent(_renderer);
-  return true;
 }
 
 void		Rendering::renderText(const std::string &txt, int x, int y) {
@@ -80,22 +65,23 @@ void	Rendering::drawRightSquare() {
 		     BOARD_WIDTH + 27 + NEXT_SQUARE_LENGTH, NEXT_SQUARE_HEIGHT + 25);
 }
 
-void		Rendering::drawNextTetromino(Tetromino &tetromino) {
-  int		addx, addy;
-  SDL_Rect	square = {BOARD_WIDTH + 28, 26,
-			  NEXT_SQUARE_LENGTH - 1, NEXT_SQUARE_HEIGHT - 1};
+void		Rendering::drawNextTetromino(const Tetromino &tetromino) {
+  SDL_Rect	square = {
+    BOARD_WIDTH + 28, 26,
+    NEXT_SQUARE_LENGTH - 1, NEXT_SQUARE_HEIGHT - 1
+  };
 
+  // clear previous tetromino
   setColor(WHITE);
   SDL_RenderFillRect(_renderer, &square);
+  square.h = CELL_SIZE - 1;
+  square.w = CELL_SIZE - 1;
+  // draw next tetromino
   setColor(tetromino._color);
-  for (auto &block : tetromino._blocks) {
-    addx = BOARD_WIDTH + 25 + (block.x - 2) * CELL_SIZE;
-    addy = 25 + (1 + block.y) * CELL_SIZE;
-    block.x += addx;
-    block.y += addy;
-    SDL_RenderFillRect(_renderer, &block);
-    block.x -= addx;
-    block.y -= addy;
+  for (const auto &block : tetromino._blocks) {
+    square.x = BOARD_WIDTH + 25 + (block.x - 2) * CELL_SIZE;
+    square.y = 25 + (1 + block.y) * CELL_SIZE;
+    SDL_RenderFillRect(_renderer, &square);
   }
 }
 
@@ -119,15 +105,14 @@ void		Rendering::setColor(Color color) {
   SDL_SetRenderDrawColor(_renderer, c[0], c[1], c[2], 255);
 }
 
-void	Rendering::drawBlock(SDL_Rect &block) const {
-  int	addx = block.x * CELL_SIZE - block.x + 1;
-  int	addy = block.y * CELL_SIZE - block.y + 1;
+void	Rendering::drawBlock(const SDL_Rect &block) const {
+  SDL_Rect square = {
+    block.x * CELL_SIZE + 1,
+    block.y * CELL_SIZE + 1,
+    CELL_SIZE - 1, CELL_SIZE - 1
+  };
 
-  block.x += addx;
-  block.y += addy;
-  SDL_RenderFillRect(_renderer, &block);
-  block.x -= addx;
-  block.y -= addy;
+  SDL_RenderFillRect(_renderer, &square);
 }
 
 void	Rendering::refresh() {
@@ -146,15 +131,15 @@ void		Rendering::drawBoard(const int board[][V_CELL_NUMBER]) {
     }
 }
 
-void	Rendering::clearPreviousTetromino(Tetromino &tetromino) {
+void	Rendering::clearPreviousTetromino(const Tetromino &tetromino) {
   setColor(WHITE);
-  for (auto &block : tetromino._savedBlocks)
+  for (const auto &block : tetromino._savedBlocks)
     drawBlock(block);
 }
 
-void	Rendering::drawCurrentTetromino(Tetromino &tetromino) {
+void	Rendering::drawCurrentTetromino(const Tetromino &tetromino) {
   setColor(tetromino._color);
-  for (auto &block : tetromino._blocks)
+  for (const auto &block : tetromino._blocks)
     drawBlock(block);
 }
 

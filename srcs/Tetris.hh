@@ -18,8 +18,7 @@ public:
 
 private:
 
-  bool	floor_standing();
-  void	show_board() const;
+  bool	floor_standing()	const;
   void	check_lines();
   bool	move_down();
   void	new_tetromino();

@@ -5,7 +5,7 @@ Tetromino::Tetromino(Color color, const Pos &start, const std::vector<Move> &mov
   reset();
 }
 
-void Tetromino::reset() {
+void	Tetromino::reset() {
   _blocks.clear();
   for (const auto &pos :_default)
     _blocks.push_back({pos.first, pos.second,
@@ -14,11 +14,11 @@ void Tetromino::reset() {
   _nextMove = 0;
 }
 
-void Tetromino::saveBlocks() {
+void	Tetromino::saveBlocks() {
   _savedBlocks = _blocks;
 }
 
-int Tetromino::getNextMove() const {
+int	Tetromino::getNextMove() const {
   if (_moves.size() == 0)
     return -1;
   if (_nextMove + 1 >= _moves.size())

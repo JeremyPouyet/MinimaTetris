@@ -1,7 +1,14 @@
+#include <iostream>
 #include "Tetris.hh"
 
 int main() {
-  Tetris tetris;
-
-  return tetris.run();
+  try {
+    Tetris tetris;
+    return tetris.run();
+  }
+  catch (const char *ex) {
+    std::cout << "Error while initialising tetris: " << ex << std::endl;
+    return -1;
+  }
+  return 0;
 }

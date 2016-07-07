@@ -1,6 +1,6 @@
 #include "Tetris.hh"
 
-Tetris::Tetris() :
+Tetris::Tetris() try : // function try block to handle error in Rendering()
   _functions({
       {SDLK_DOWN,	std::bind(&Tetris::move_down, this)},
       {SDLK_LEFT,	std::bind(&Tetris::move_left, this)},
@@ -8,26 +8,20 @@ Tetris::Tetris() :
       {SDLK_UP,		std::bind(&Tetris::rotate, this)},
       {SDLK_SPACE,	std::bind(&Tetris::fast_placing, this)}
     }),
-  _tetromino(tetrominos[_rg.i_between(0, tetrominos.size() - 1)]),
-  _nextTetromino(tetrominos[_rg.i_between(0, tetrominos.size() - 1)]) {
+    _tetromino(tetrominos[_rg.i_between(0, tetrominos.size() - 1)]),
+    _nextTetromino(tetrominos[_rg.i_between(0, tetrominos.size() - 1)]),
+    _rendering()
+    {
+    }
+catch (const char *ex) {
+  throw ex;
 }
 
-bool	Tetris::floor_standing() {
+bool	Tetris::floor_standing() const {
   for (const auto &block : _tetromino._blocks)
     if (block.y == V_CELL_NUMBER - 1 || _board[block.x][block.y + 1] != WHITE)
       return true;
   return false;
-}
-
-void		Tetris::show_board() const {
-  unsigned int	x, y;
-
-  for (y = 0; y < V_CELL_NUMBER; y++) {
-    for (x = 0; x < H_CELL_NUMBER + 1; x++)
-      std::cout << _board[x][y] << " ";
-    std::cout << std::endl;
-  }
-  std::cout << std::endl;
 }
 
 void		Tetris::check_lines() {
@@ -47,15 +41,14 @@ void		Tetris::check_lines() {
     if (_board[H_CELL_NUMBER][y] == H_CELL_NUMBER) { // if line is full
       ++_linesCleared;
       _board[H_CELL_NUMBER][y] = 0;
+      // replace each cell by its y - 1 neighbour, or by WHITE if y1 == 0
       for (y1 = y; y1 > 1; y1--)
 	for (x = 0; x < H_CELL_NUMBER + 1; x++)
-	  _board[x][y1] = _board[x][y1 - 1];
+	  _board[x][y1] = (y1 > 0) ? _board[x][y1 - 1] : WHITE;
     }
     else
       --y;
   }
-  for (x = 0; x < H_CELL_NUMBER + 1; x++)
-    _board[x][0] = WHITE;
   if (_linesCleared > 0) {
     _score		+= _linesCleared * _linesCleared;
     _linesCleared	= 0;
@@ -195,8 +188,6 @@ int		Tetris::run() {
   bool		quit	= false;
   bool		moved	= false;
 
-  if (_rendering.initialize() == false)
-    return 1;
   new_tetromino();
   while (quit == false && SDL_WaitEvent(&e) >= 0) {
     if (e.type == SDL_QUIT)
