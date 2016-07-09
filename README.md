@@ -1,6 +1,10 @@
 # MinimaTetris ?
 
-Last night, it was hard for me to sleep, so I created this little Tetris. It's not finished yet, and I'll update it later with an Artificial Intelligence.
+Last night, it was hard for me to sleep, so I created this little Tetris. My goal is to later add an Artificial Intelligence that will play alone.  
+
+Game preview:  
+
+![alt tag](https://github.com/JeremyPouyet/MinimaTetris/blob/master/imgs/preview.png)
 
 ## Install:
 
