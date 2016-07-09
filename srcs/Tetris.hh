@@ -17,7 +17,6 @@ public:
   void	auto_move_down();
 
 private:
-
   bool	floor_standing()	const;
   void	check_lines();
   bool	move_down();
@@ -26,6 +25,10 @@ private:
   bool	move_left();
   bool	move_right();
   bool	rotate();
+  void	reset();
+  bool	gameOver()		const;
+
+  static const int	_defaultTime = 700;
 
   std::map<int, std::function<bool()> > _functions;
   RandomGenerator &_rg		= RandomGenerator::getInstance();
@@ -37,6 +40,6 @@ private:
   AudioManager	_audioManager;
   SDL_TimerID	_timerID;
   bool		_timerRunning	= false;
-  int		_current_time	= 700;
+  int		_current_time	= _defaultTime;
   unsigned int	_score		= 0;
 };
