@@ -25,4 +25,4 @@ The game start directly after the launch, then:
 * ↑ : rotate current tetromino  
 * space: fast placing, current tetromino will move down until it encounter another tetromino  
 
-After a game over, the game will be relaunched automatically.
+After a game over, a new game will start automatically.
