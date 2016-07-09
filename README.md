@@ -15,10 +15,10 @@ $> ./MinimaTetris
 
 The game start directly after the launch, then:  
 
-* left arrow: move current tetromino left  
-* right arrow: move current tetromino right  
-* down arrow: move current tetromino down  
-* up arrow: rotate current tetromino  
+* ← : move current tetromino left  
+* → : move current tetromino right  
+* ↓ : move current tetromino down  
+* ↑ : rotate current tetromino  
 * space: fast placing, current tetromino will move down until it encounter another tetromino  
 
 After a game over, the game will be relaunched automatically.
