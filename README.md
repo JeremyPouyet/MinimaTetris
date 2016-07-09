@@ -26,3 +26,9 @@ The game start directly after the launch, then:
 * space: fast placing, current tetromino will move down until it encounter another tetromino  
 
 After a game over, a new game will start automatically.
+
+### Todo
+
+* An ANN that plays alone
+* save last games ?
+* better rotation system, with the real rotation formula
