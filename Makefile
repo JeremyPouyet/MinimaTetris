@@ -24,7 +24,7 @@ CPPFLAGS	+= -std=c++11
 ## libraries
 ##
 
-LIBS		= -lSDL2 -lSDL2_mixer -lSDL2_ttf
+LIBS		= -lSDL2 -lSDL2_mixer -lSDL2_ttf -lm
 
 ##
 ## compilation options

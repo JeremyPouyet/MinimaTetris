@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include <vector>
 #include <map>
+#include <cmath>
 
 //Screen dimension constants
 const int H_CELL_NUMBER = 10;
@@ -43,89 +44,52 @@ const std::map<Color, RGB_Color> colors = {
 };
 
 struct Tetromino {
-  Tetromino(Color color, const Pos &start, const std::vector<Move> &moves = {});
+public:
+  Tetromino(Color color, const Pos &start,
+	    unsigned int center = 2, bool move = true);
   Tetromino() = default;
   void	reset();
-  int	getNextMove() const;
+  bool	rotate(const int board[][V_CELL_NUMBER]);
   void	saveBlocks();
 
   Color			_color;
   Pos			_default;
-  std::vector<Move>	_moves;
+  unsigned int		_center;
+  bool			_move;
   std::vector<SDL_Rect>	_blocks;
   std::vector<SDL_Rect> _savedBlocks;
   unsigned int		_nextMove = 0;
+private:
+  void	rollBack();
 };
 
 const std::vector<Tetromino> tetrominos{{
     BLUE, { // O
       {4, 0}, {5, 0}, {4, 1}, {5, 1}
-    }
-  }, {
+    }, 0, false
+	 }, {
     YELLOW, { // T
       {5, 0}, {4, 1}, {5, 1}, {6, 1}
-    }, { {
-	{1, -1}, {-1, -1}, {0, 0}, {1, 1}
-      }, {
-	{1, 1}, {1, -1}, {0, 0}, {-1, 1}
-      }, {
-	{-1, 1}, {1, 1}, {0, 0}, {-1, -1}
-      }, {
-	{-1, -1}, {-1, 1}, {0, 0}, {1, -1}
-      }
     }
   }, {
     PURPLE, { // I
       {3, 0}, {4, 0}, {5, 0}, {6, 0}
-    }, { {
-	{-1, 1}, {0, 0}, {1, -1}, {2, -2}
-      }, {
-	{1, -1}, {0, 0}, {-1, 1}, {-2, 2}
-      }
     }
   }, {
     PINK, { // reverse L
       {4, 0}, {5, 0}, {6, 0}, {6, 1}
-    }, { {
-	{-1, -1}, {0, 0}, {1, 1}, {0, 2}
-      }, {
-	{1, -1}, {0, 0}, {-1, 1}, {-2, 0}
-      }, {
-	{1, 1}, {0, 0}, {-1, -1}, {0, -2}
-      }, {
-	{-1, 1}, {0, 0}, {1, -1}, {2, 0}
-      }
-    }
+    }, 1
   }, {
     ORANGE, { // L
       {4, 0}, {5, 0}, {6, 0}, {4, 1}
-    }, { {
-	{-1, -1}, {0, 0}, {1, 1}, {-2, 0}
-      }, {
-	{1, -1}, {0, 0}, {-1, 1}, {0, -2}
-      }, {
-	{1, 1}, {0, 0}, {-1, -1}, {2, 0}
-      }, {
-	{-1, 1}, {0, 0}, {1, -1}, {0, 2}
-      }
-    }
+    }, 1
   }, {
     GREEN, { // Z
       {4, 0}, {5, 0}, {5, 1}, {6, 1}
-    }, { {
-	{-2, 1}, {-1, 0}, {0, 1}, {1, 0}
-      }, {
-	{2, -1}, {1, 0}, {0, -1}, {-1, 0}
-      }
     }
   }, {
     RED, { // S
       {5, 0}, {6, 0}, {4, 1}, {5, 1}
-    }, { {
-	{-1, 0}, {0, -1}, {-1, 2}, {0, 1}
-      }, {
-	{1, 0}, {0, 1}, {1, -2}, {0, -1}
-      }
-    }
+    }, 0
   }
 };

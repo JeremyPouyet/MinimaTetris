@@ -177,28 +177,11 @@ bool	Tetris::move_right() {
 ** @return wether the rotation has been done
 */
 bool		Tetris::rotate() {
-  Move		move;
-  int		x, y, nextMove	= _tetromino.getNextMove();
-  unsigned int	i;
-
-  if (nextMove == -1)
-    return false;
-  move = _tetromino._moves[nextMove];
-  for (i = 0; i < _tetromino._blocks.size(); i++) {
-    x = _tetromino._blocks[i].x + move[i].first;
-    y = _tetromino._blocks[i].y + move[i].second;
-    if (x < 0 || x >= H_CELL_NUMBER || y < 0
-	|| y >= V_CELL_NUMBER || _board[x][y] != WHITE)
-      return false;
+  if (_tetromino.rotate(_board) == true) {
+    _audioManager.play("rotate");
+    return true;
   }
-  _tetromino.saveBlocks();
-  for (i = 0; i < _tetromino._blocks.size(); i++) {
-    _tetromino._blocks[i].x += move[i].first;
-    _tetromino._blocks[i].y += move[i].second;
-  }
-  _tetromino._nextMove = nextMove;
-  _audioManager.play("rotate");
-  return true;
+  return false;
 }
 
 int		Tetris::run() {
