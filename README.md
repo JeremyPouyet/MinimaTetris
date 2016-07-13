@@ -1,6 +1,10 @@
 # MinimaTetris ?
 
-Last night, it was hard for me to sleep, so I created this little Tetris. It's not finished yet, and I'll update it later with an Artificial Intelligence.
+Last night, it was hard for me to sleep, so I created this little Tetris. My goal is to later add an Artificial Intelligence that will play alone.  
+
+Game preview:  
+
+![alt tag](https://github.com/JeremyPouyet/MinimaTetris/blob/master/imgs/preview.png)
 
 ## Install:
 
@@ -21,4 +25,10 @@ The game start directly after the launch, then:
 * ↑ : rotate current tetromino  
 * space: fast placing, current tetromino will move down until it encounter another tetromino  
 
-After a game over, the game will be relaunched automatically.
+After a game over, a new game will start automatically.
+
+### Todo
+
+* An ANN that plays alone
+* save last games ?
+* better rotation system, with the real rotation formula
