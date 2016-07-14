@@ -33,4 +33,3 @@ After a game over, a new game will start automatically.
 
 * An ANN that plays alone
 * save last games ?
-* better rotation system, with the real rotation formula
