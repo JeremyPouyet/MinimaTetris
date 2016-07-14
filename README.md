@@ -1,8 +1,8 @@
 # MinimaTetris ?
 
-Last night, it was hard for me to sleep, so I created this little Tetris. My goal is to later add an Artificial Intelligence that will play alone.  
+Last night, it was hard for me to sleep, so I created this little Tetris. My goal is to later add an Artificial Intelligence that will play alone.
 
-Game preview:  
+Game preview:
 
 ![alt tag](https://github.com/JeremyPouyet/MinimaTetris/blob/master/imgs/preview.png)
 
@@ -17,13 +17,15 @@ $> ./MinimaTetris
 
 ## How to play:
 
-The game start directly after the launch, then:  
+The game start directly after the launch, then:
 
-* ← : move current tetromino left  
-* → : move current tetromino right  
-* ↓ : move current tetromino down  
-* ↑ : rotate current tetromino  
-* space: fast placing, current tetromino will move down until it encounter another tetromino  
+* ← : move current tetromino left
+* → : move current tetromino right
+* ↓ : move current tetromino down
+* ↑ : rotate current tetromino
+* space: fast placing, current tetromino will move down until it encounter another tetromino
+* + : increase sound volume
+* - : decrease sound volume
 
 After a game over, a new game will start automatically.
 

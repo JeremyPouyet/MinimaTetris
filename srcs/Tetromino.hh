@@ -27,7 +27,6 @@ enum Color {
 };
 
 using RGB_Color = std::vector<int>;
-using Move	= std::vector<std::pair<int, int> >;
 using Pos	= std::vector<std::pair<int, int> >;
 
 const std::map<Color, RGB_Color> colors = {
@@ -45,9 +44,9 @@ const std::map<Color, RGB_Color> colors = {
 
 struct Tetromino {
 public:
-  Tetromino(Color color, const Pos &start,
-	    unsigned int center = 2, bool move = true);
+  Tetromino(Color color, const Pos &start, unsigned int center, bool move = true);
   Tetromino() = default;
+
   void	reset();
   bool	rotate(const int board[][V_CELL_NUMBER]);
   void	saveBlocks();
@@ -58,38 +57,6 @@ public:
   bool			_move;
   std::vector<SDL_Rect>	_blocks;
   std::vector<SDL_Rect> _savedBlocks;
-  unsigned int		_nextMove = 0;
 private:
   void	rollBack();
-};
-
-const std::vector<Tetromino> tetrominos{{
-    BLUE, { // O
-      {4, 0}, {5, 0}, {4, 1}, {5, 1}
-    }, 0, false
-	 }, {
-    YELLOW, { // T
-      {5, 0}, {4, 1}, {5, 1}, {6, 1}
-    }
-  }, {
-    PURPLE, { // I
-      {3, 0}, {4, 0}, {5, 0}, {6, 0}
-    }
-  }, {
-    PINK, { // reverse L
-      {4, 0}, {5, 0}, {6, 0}, {6, 1}
-    }, 1
-  }, {
-    ORANGE, { // L
-      {4, 0}, {5, 0}, {6, 0}, {4, 1}
-    }, 1
-  }, {
-    GREEN, { // Z
-      {4, 0}, {5, 0}, {5, 1}, {6, 1}
-    }
-  }, {
-    RED, { // S
-      {5, 0}, {6, 0}, {4, 1}, {5, 1}
-    }, 0
-  }
 };

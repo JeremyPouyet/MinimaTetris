@@ -1,12 +1,31 @@
 #include "Tetris.hh"
 
+static const std::vector<Tetromino> tetrominos{{
+    BLUE, { {4, 0}, {5, 0}, {4, 1}, {5, 1} }, 0, false // O
+  }, {
+    YELLOW, { {5, 0}, {4, 1}, {5, 1}, {6, 1} }, 2 // T
+  }, {
+    PURPLE, { {3, 0}, {4, 0}, {5, 0}, {6, 0} }, 2 // I
+  }, {
+    PINK, { {4, 0}, {5, 0}, {6, 0}, {6, 1} }, 1 // reverse L
+  }, {
+    ORANGE, { {4, 0}, {5, 0}, {6, 0}, {4, 1} }, 1 // L
+  }, {
+    GREEN, { {4, 0}, {5, 0}, {5, 1}, {6, 1} }, 2 // Z
+  }, {
+    RED, { {5, 0}, {6, 0}, {4, 1}, {5, 1} }, 0  // S
+  }
+};
+
 Tetris::Tetris() try : // function try block to handle error in Rendering()
   _functions({
-      {SDLK_DOWN,	std::bind(&Tetris::move_down, this)},
-      {SDLK_LEFT,	std::bind(&Tetris::move_left, this)},
-      {SDLK_RIGHT,	std::bind(&Tetris::move_right, this)},
-      {SDLK_UP,		std::bind(&Tetris::rotate, this)},
-      {SDLK_SPACE,	std::bind(&Tetris::fast_placing, this)}
+      {SDLK_DOWN,	std::bind(&Tetris::move_down,	this)},
+      {SDLK_LEFT,	std::bind(&Tetris::move_left,	this)},
+      {SDLK_RIGHT,	std::bind(&Tetris::move_right,	this)},
+      {SDLK_UP,		std::bind(&Tetris::rotate,	this)},
+      {SDLK_SPACE,	std::bind(&Tetris::fast_placing, this)},
+      {SDLK_KP_PLUS,	std::bind(&AudioManager::increaseVolume, &_audioManager)},
+      {SDLK_KP_MINUS,	std::bind(&AudioManager::decreaseVolume, &_audioManager)}
     }),
     _nextTetromino(tetrominos[_rg.i_between(0, tetrominos.size() - 1)]),
     _rendering()
@@ -71,27 +90,29 @@ void		Tetris::check_lines() {
 ** move current tetromino down
 ** @return wether the tetromino has moved
 */
-bool	Tetris::move_down() {
+void	Tetris::move_down() {
   if (floor_standing()) {
     for (const auto &block : _tetromino._blocks) {
-      ++_board[H_CELL_NUMBER][block.y];
+      ++_board[H_CELL_NUMBER][block.y]; // increase the number of block in line block.y
       _board[block.x][block.y] = _tetromino._color;
     }
     check_lines();
     new_tetromino();
-    return false;
+    _moved = false;
+    return;
   }
   _tetromino.saveBlocks();
   for (auto &block : _tetromino._blocks)
     ++block.y;
-  return true;
+  _moved = true;
 }
 
 /*
 ** move current tetromino down every N ms
 */
 void	Tetris::auto_move_down() {
-  if (move_down() == false)
+  move_down();
+  if (_moved == false)
     return;
   _rendering.clearPreviousTetromino(_tetromino);
   _rendering.drawCurrentTetromino(_tetromino);
@@ -130,30 +151,33 @@ void	Tetris::new_tetromino() {
   _rendering.drawNextTetromino(_nextTetromino);
 }
 
-bool	Tetris::fast_placing() {
+void	Tetris::fast_placing() {
   SDL_RemoveTimer(_timerID);
   _timerRunning = false;
-  while (move_down()) {
-    _rendering.clearPreviousTetromino(_tetromino);
-    _rendering.drawCurrentTetromino(_tetromino);
-    _rendering.refresh();
-  }
-  return true;
+  do {
+    move_down();
+    if (_moved == true) {
+      _rendering.clearPreviousTetromino(_tetromino);
+      _rendering.drawCurrentTetromino(_tetromino);
+      _rendering.refresh();
+    }
+  } while (_moved == true);
+  _moved = true;
 }
 
 /*
 ** move current tetromino left
 ** @return wether the tetromino has moves
 */
-bool	Tetris::move_left() {
+void	Tetris::move_left() {
   for (const auto &block : _tetromino._blocks)
     if (block.x <= 0 || _board[block.x - 1][block.y] != WHITE)
-      return false;
+      return;
   _tetromino.saveBlocks();
   for (auto &block : _tetromino._blocks)
     --block.x;
   _audioManager.play("move");
-  return true;
+  _moved = true;
 }
 
 /*
@@ -161,44 +185,43 @@ bool	Tetris::move_left() {
 ** @return wether the tetromino has moves
 */
 
-bool	Tetris::move_right() {
+void	Tetris::move_right() {
   for (const auto &block : _tetromino._blocks)
     if (block.x >= H_CELL_NUMBER - 1 || _board[block.x + 1][block.y] != WHITE)
-      return false;
+      return;
   _tetromino.saveBlocks();
   for (auto &block : _tetromino._blocks)
     ++block.x;
   _audioManager.play("move");
-  return true;
+  _moved = true;
 }
 
 /*
 ** rotate the current tetromino
 ** @return wether the rotation has been done
 */
-bool		Tetris::rotate() {
+void		Tetris::rotate() {
   if (_tetromino.rotate(_board) == true) {
     _audioManager.play("rotate");
-    return true;
+    _moved = true;
   }
-  return false;
 }
 
 int		Tetris::run() {
   SDL_Event	e;
   bool		quit	= false;
-  bool		moved	= false;
 
   new_tetromino();
   while (quit == false && SDL_WaitEvent(&e) >= 0) {
     if (e.type == SDL_QUIT)
       quit = true;
     else if (e.type == SDL_KEYDOWN && _functions.count(e.key.keysym.sym) > 0) {
-      moved = _functions[e.key.keysym.sym]();
-      if (moved) {
+      _functions.at(e.key.keysym.sym)();
+      if (_moved) {
 	_rendering.clearPreviousTetromino(_tetromino);
 	_rendering.drawCurrentTetromino(_tetromino);
 	_rendering.refresh();
+	_moved = false;
       }
     }
   }
