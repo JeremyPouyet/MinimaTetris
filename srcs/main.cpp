@@ -4,7 +4,7 @@
 int main() {
   try {
     Tetris tetris;
-    return tetris.run();
+    tetris.run();
   }
   catch (const char *ex) {
     std::cout << "Error while initialising tetris: " << ex << std::endl;

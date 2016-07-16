@@ -12,7 +12,7 @@ class Tetris {
 public:
   Tetris();
 
-  int	run();
+  void	run();
   void	auto_move_down();
 
 private:

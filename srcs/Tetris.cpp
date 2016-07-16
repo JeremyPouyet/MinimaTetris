@@ -112,11 +112,11 @@ void	Tetris::move_down() {
 */
 void	Tetris::auto_move_down() {
   move_down();
-  if (_moved == false)
-    return;
-  _rendering.clearPreviousTetromino(_tetromino);
-  _rendering.drawCurrentTetromino(_tetromino);
-  _rendering.refresh();
+  if (_moved == true) {
+    _rendering.clearPreviousTetromino(_tetromino);
+    _rendering.drawCurrentTetromino(_tetromino);
+    _rendering.refresh();
+  }
 }
 
 static Uint32 __c_auto_move_down(Uint32 interval, void *that) {
@@ -126,10 +126,9 @@ static Uint32 __c_auto_move_down(Uint32 interval, void *that) {
 }
 
 bool	Tetris::gameOver() const {
-  for (const auto &block : _tetromino._blocks) {
+  for (const auto &block : _tetromino._blocks)
     if (_board[block.x][block.y] != WHITE)
       return true;
-  }
   return false;
 }
 
@@ -140,15 +139,15 @@ void	Tetris::new_tetromino() {
   }
   _tetromino.reset();
   _tetromino	= _nextTetromino;
-  if (gameOver() == true) {
+  if (gameOver() == true)
     reset();
-    return;
+  else {
+    _nextTetromino	= tetrominos[_rg.i_between(0, tetrominos.size() - 1)];
+    _timerID		= SDL_AddTimer(_current_time, __c_auto_move_down, this);
+    _timerRunning	= true;
+    _current_time	-= 2;
+    _rendering.drawNextTetromino(_nextTetromino);
   }
-  _nextTetromino = tetrominos[_rg.i_between(0, tetrominos.size() - 1)];
-  _timerID	= SDL_AddTimer(_current_time, __c_auto_move_down, this);
-  _timerRunning	= true;
-  _current_time -= 2;
-  _rendering.drawNextTetromino(_nextTetromino);
 }
 
 void	Tetris::fast_placing() {
@@ -207,7 +206,7 @@ void		Tetris::rotate() {
   }
 }
 
-int		Tetris::run() {
+void		Tetris::run() {
   SDL_Event	e;
   bool		quit	= false;
 
@@ -226,5 +225,4 @@ int		Tetris::run() {
     }
   }
   SDL_RemoveTimer(_timerID);
-  return 0;
 }
