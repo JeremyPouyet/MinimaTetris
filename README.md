@@ -9,11 +9,16 @@ Game preview:
 ## Install:
 
 ```
-$> sudo apt-get install libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev
-$> git clone https://github.com/JeremyPouyet/MinimaTetris.git
-$> cd MinimaTetris/ && make
-$> ./MinimaTetris
+$> git clone https://github.com/JeremyPouyet/MinimaTetris.git  
+$> cd MinimaTetris/ && make install  
+$> ./bin/MinimaTetris  
 ```
+
+Be aware that install will install the following packages:  
+
+* libsdl2-dev  
+* libsdl2-ttf-dev  
+* libsdl2-mixer-dev  
 
 ## How to play:
 

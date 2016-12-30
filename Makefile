@@ -1,7 +1,10 @@
 ##
 ## Practical aliases
 ##
+BUILD		= ./build
+BIN		= ./bin
 CC		= g++
+MKDIR		= mkdir -p
 RM		= rm -rf
 SRCS_DIR	= ./srcs
 
@@ -31,40 +34,44 @@ LIBS		= -lSDL2 -lSDL2_mixer -lSDL2_ttf -lm
 ##
 PRGRM		= MinimaTetris
 
-SRCS	= $(SRCS_DIR)/main.cpp \
-	$(SRCS_DIR)/Rendering.cpp \
-	$(SRCS_DIR)/Tetromino.cpp \
-	$(SRCS_DIR)/AudioManager.cpp \
-	$(SRCS_DIR)/Tetris.cpp
+SRCS	= $(wildcard $(SRCS_DIR)/*.cpp)
 
-OBJS	= $(SRCS:.cpp=.o)
+OBJS	= $(patsubst $(SRCS_DIR)/%.cpp,$(BUILD)/%.o,$(SRCS))
 
 ##
 ## compilation
 ##
-all:		$(PRGRM)
+all:		dir $(BIN)/$(PRGRM)
 
-prgrm:		$(PRGRM)
+dir:
+		$(MKDIR) $(BIN) $(BUILD)
 
-$(PRGRM):	$(OBJS)
-		$(CC) -o $@ $(OBJS) $(LIBS)
+$(BIN)/$(PRGRM):	$(OBJS)
+			$(CC) $(OBJS) -o $@ $(LIBS)
+
+$(OBJS):	$(BUILD)/%.o : $(SRCS_DIR)/%.cpp
+		$(CC) $(CPPFLAGS) -c $< -o $@
+
+install:
+	sudo apt-get install libsdl2-dev libsdl2-ttf-dev libsdl2-mixer-dev
+	$(MAKE) all
 
 ##
 ## Clean
 ##
-RM_OBJS	= $(OBJS)
+RM_OBJS	= $(BUILD)
 
-RM_BINS	= $(PRGRM)
+RM_BIN	= $(BIN)
 
 clean:
 	$(RM) $(RM_OBJS)
 
 fclean:	clean
-	$(RM) $(RM_BINS)
+	$(RM) $(RM_BIN)
 
 re:	fclean all
 
 ##
 ## avoid problems
 ##
-.PHONY:	all clean fclean re rclean prgrm $(PRGRM)
+.PHONY:	all $(BIN)/$(PRGRM) clean dir fclean install $(OBJS) re
