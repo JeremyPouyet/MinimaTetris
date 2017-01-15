@@ -1,20 +1,17 @@
 #include "Tetromino.hh"
 
-Tetromino::Tetromino(Color color, const Pos &start,
-		     unsigned int center, bool move) :
-  _color(color), _default(start), _center(center), _move(move) {
+Tetromino::Tetromino(Color color, const Pos &start, unsigned int center, bool move)
+  : _color(color), _default(start), _center(center), _move(move) {
   reset();
 }
 
-void	Tetromino::reset() {
+void		Tetromino::reset() {
   _blocks.clear();
   for (const auto &pos :_default)
-    _blocks.push_back({pos.first, pos.second,
-	  CELL_SIZE - GRID_THICKNESS,
-	  CELL_SIZE - GRID_THICKNESS});
+    _blocks.push_back({pos.first, pos.second, CELL_SIZE - GRID_THICKNESS, CELL_SIZE - GRID_THICKNESS});
 }
 
-void	Tetromino::saveBlocks() {
+void		Tetromino::saveBlocks() {
   _savedBlocks = _blocks;
 }
 

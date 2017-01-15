@@ -17,17 +17,17 @@ bool AudioManager::play(const std::string &name) {
 }
 
 void	AudioManager::increaseVolume() {
-  if (_currentVolume + 1 > MIX_MAX_VOLUME)
-    return;
-  ++_currentVolume;
-  setSound();
+  if (_currentVolume + 1 <= MIX_MAX_VOLUME) {
+    ++_currentVolume;
+    setSound();
+  }
 }
 
 void	AudioManager::decreaseVolume() {
-  if (_currentVolume - 1 < 0)
-    return;
-  --_currentVolume;
-  setSound();
+  if (_currentVolume - 1 >= 0) {
+    --_currentVolume;
+    setSound();
+  }
 }
 
 void	AudioManager::setSound() {

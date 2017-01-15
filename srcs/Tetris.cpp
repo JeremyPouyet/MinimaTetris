@@ -1,23 +1,16 @@
 #include "Tetris.hh"
 
-static const std::vector<Tetromino> tetrominos{{
-    BLUE, { {4, 0}, {5, 0}, {4, 1}, {5, 1} }, 0, false // O
-  }, {
-    YELLOW, { {5, 0}, {4, 1}, {5, 1}, {6, 1} }, 2 // T
-  }, {
-    PURPLE, { {3, 0}, {4, 0}, {5, 0}, {6, 0} }, 2 // I
-  }, {
-    PINK, { {4, 0}, {5, 0}, {6, 0}, {6, 1} }, 1 // reverse L
-  }, {
-    ORANGE, { {4, 0}, {5, 0}, {6, 0}, {4, 1} }, 1 // L
-  }, {
-    GREEN, { {4, 0}, {5, 0}, {5, 1}, {6, 1} }, 2 // Z
-  }, {
-    RED, { {5, 0}, {6, 0}, {4, 1}, {5, 1} }, 0  // S
-  }
+static const std::vector<Tetromino> tetrominos{
+  {BLUE, { {4, 0}, {5, 0}, {4, 1}, {5, 1} }, 0, false }, // O
+  {YELLOW, { {5, 0}, {4, 1}, {5, 1}, {6, 1} }, 2 }, // T
+  {PURPLE, { {3, 0}, {4, 0}, {5, 0}, {6, 0} }, 2 }, // I
+  {PINK, { {4, 0}, {5, 0}, {6, 0}, {6, 1} }, 1 }, // reverse L
+  {ORANGE, { {4, 0}, {5, 0}, {6, 0}, {4, 1} }, 1 }, // L
+  {GREEN, { {4, 0}, {5, 0}, {5, 1}, {6, 1} }, 2 }, // Z
+  {RED, { {5, 0}, {6, 0}, {4, 1}, {5, 1} }, 0}  // S
 };
 
-Tetris::Tetris() try : // function try block to handle error in Rendering()
+Tetris::Tetris() :
   _functions({
       {SDLK_DOWN,	std::bind(&Tetris::move_down,	this)},
       {SDLK_LEFT,	std::bind(&Tetris::move_left,	this)},
@@ -27,12 +20,9 @@ Tetris::Tetris() try : // function try block to handle error in Rendering()
       {SDLK_KP_PLUS,	std::bind(&AudioManager::increaseVolume, &_audioManager)},
       {SDLK_KP_MINUS,	std::bind(&AudioManager::decreaseVolume, &_audioManager)}
     }),
-    _nextTetromino(tetrominos[_rg.i_between(0, tetrominos.size() - 1)]),
-    _rendering()
-    {
-    }
-catch (const char *ex) {
-  throw ex;
+  _nextTetromino(tetrominos[_rg.i_between(0, tetrominos.size() - 1)])
+{
+  _rendering.drawBestScores(_scoring.getBestScores(10));
 }
 
 void	Tetris::reset() {
@@ -41,11 +31,13 @@ void	Tetris::reset() {
   for (x = 0; x < H_CELL_NUMBER + 1; x++)
     for (y = 0; y < V_CELL_NUMBER; y++)
       _board[x][y] = WHITE;
+  _scoring.addScore(_score);
   _score	= 0;
   _linesCleared = 0;
   _current_time = _defaultTime;
   _rendering.drawBoard(_board);
   _rendering.drawScore(_score);
+  _rendering.drawBestScores(_scoring.getBestScores(10));
   new_tetromino();
   _rendering.refresh();
 }
@@ -58,7 +50,7 @@ bool	Tetris::floor_standing() const {
 }
 
 void		Tetris::check_lines() {
-  int		y, y1, x;
+  unsigned int	y, y1, x;
 
   // for each line
   for (y = V_CELL_NUMBER - 1; y > 0 && _board[H_CELL_NUMBER][y] != 0;) {
@@ -208,7 +200,7 @@ void		Tetris::rotate() {
 
 void		Tetris::run() {
   SDL_Event	e;
-  bool		quit	= false;
+  bool		quit(false);
 
   new_tetromino();
   while (quit == false && SDL_WaitEvent(&e) >= 0) {

@@ -5,18 +5,10 @@
 #include <map>
 #include <cmath>
 
-//Screen dimension constants
-const int H_CELL_NUMBER = 10;
-const int V_CELL_NUMBER = 24;
-const int GRID_THICKNESS = 1;
-const int CELL_SIZE	= 25;
-const int BOARD_WIDTH	= CELL_SIZE * H_CELL_NUMBER;
-const int BOARD_HEIGHT	= CELL_SIZE * V_CELL_NUMBER;
-const int RIGHT_SIDE	= 200;
-const int SCREEN_WIDTH	= BOARD_WIDTH + RIGHT_SIDE;
-const int SCREEN_HEIGHT = BOARD_HEIGHT;
-const int NEXT_SQUARE_LENGTH = 6 * CELL_SIZE;
-const int NEXT_SQUARE_HEIGHT = 4 * CELL_SIZE;
+constexpr int H_CELL_NUMBER	= 10;
+constexpr int V_CELL_NUMBER	= 24;
+constexpr int GRID_THICKNESS = 1;
+constexpr int CELL_SIZE	= 25;
 
 enum Color {
   WHITE = 0,	BLUE,

@@ -11,7 +11,7 @@ SRCS_DIR	= ./srcs
 ##
 ## code like a boss
 ##
-CPPFLAGS	+= -W -Wextra -Wall -O2
+CPPFLAGS	+= -W -Wextra -Wall -O2 -fmax-errors=3
 
 ##
 ## header location
