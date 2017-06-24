@@ -7,16 +7,16 @@
 #include "Scoring.hh"
 #include "Tetromino.hh"
 
-constexpr int BOARD_WIDTH	= CELL_SIZE * H_CELL_NUMBER;
-constexpr int BOARD_HEIGHT	= CELL_SIZE * V_CELL_NUMBER;
-constexpr int RIGHT_SIDE	= 200;
-constexpr int SCREEN_WIDTH	= BOARD_WIDTH + RIGHT_SIDE;
-constexpr int SCREEN_HEIGHT	= BOARD_HEIGHT;
-constexpr int NEXT_SQUARE_LENGTH = 6 * CELL_SIZE;
-constexpr int NEXT_SQUARE_HEIGHT = 4 * CELL_SIZE;
-constexpr int FONT_SIZE		= 17;
-constexpr int MIDDLE_MARGIN	= 27;
-constexpr int RIGHT_COLUMN_START = BOARD_WIDTH + MIDDLE_MARGIN;
+constexpr int BOARD_WIDTH		= CELL_SIZE * H_CELL_NUMBER;
+constexpr int BOARD_HEIGHT		= CELL_SIZE * V_CELL_NUMBER;
+constexpr int RIGHT_SIDE		= 200;
+constexpr int SCREEN_WIDTH		= BOARD_WIDTH + RIGHT_SIDE;
+constexpr int SCREEN_HEIGHT		= BOARD_HEIGHT;
+constexpr int NEXT_SQUARE_LENGTH	= 6 * CELL_SIZE;
+constexpr int NEXT_SQUARE_HEIGHT	= 4 * CELL_SIZE;
+constexpr int FONT_SIZE			= 17;
+constexpr int MIDDLE_MARGIN		= 27;
+constexpr int RIGHT_COLUMN_START	= BOARD_WIDTH + MIDDLE_MARGIN;
 
 class Rendering {
 public:

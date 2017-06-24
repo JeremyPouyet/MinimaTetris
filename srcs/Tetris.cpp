@@ -21,9 +21,7 @@ Tetris::Tetris() :
       {SDLK_KP_MINUS,	std::bind(&AudioManager::decreaseVolume, &_audioManager)}
     }),
   _nextTetromino(tetrominos[_rg.i_between(0, tetrominos.size() - 1)])
-{
-  _rendering.drawBestScores(_scoring.getBestScores(10));
-}
+{}
 
 void	Tetris::reset() {
   unsigned int x, y;
@@ -31,9 +29,12 @@ void	Tetris::reset() {
   for (x = 0; x < H_CELL_NUMBER + 1; x++)
     for (y = 0; y < V_CELL_NUMBER; y++)
       _board[x][y] = WHITE;
-  _scoring.addScore(_score);
+  if (_score > 0)
+    _scoring.addScore(_score);
   _score	= 0;
   _linesCleared = 0;
+  _moved	= false;
+  _refreshRate	= 20;
   _current_time = _defaultTime;
   _rendering.drawBoard(_board);
   _rendering.drawScore(_score);
@@ -65,13 +66,9 @@ void		Tetris::check_lines() {
     else
       --y;
   }
-
   if (_linesCleared > 0) {
     _score		+= _linesCleared * _linesCleared;
     _linesCleared	= 0;
-    _rendering.drawBoard(_board);
-    _rendering.drawScore(_score);
-    _rendering.refresh();
     _audioManager.play("destroy");
   }
   else
@@ -90,6 +87,9 @@ void	Tetris::move_down() {
     }
     check_lines();
     new_tetromino();
+    _rendering.drawBoard(_board);
+    _rendering.drawScore(_score);
+    _rendering.refresh();
     _moved = false;
     return;
   }
@@ -97,24 +97,6 @@ void	Tetris::move_down() {
   for (auto &block : _tetromino._blocks)
     ++block.y;
   _moved = true;
-}
-
-/*
-** move current tetromino down every N ms
-*/
-void	Tetris::auto_move_down() {
-  move_down();
-  if (_moved == true) {
-    _rendering.clearPreviousTetromino(_tetromino);
-    _rendering.drawCurrentTetromino(_tetromino);
-    _rendering.refresh();
-  }
-}
-
-static Uint32 __c_auto_move_down(Uint32 interval, void *that) {
-  Tetris *tetris = static_cast<Tetris *>(that);
-  tetris->auto_move_down();
-  return interval;
 }
 
 bool	Tetris::gameOver() const {
@@ -125,27 +107,21 @@ bool	Tetris::gameOver() const {
 }
 
 void	Tetris::new_tetromino() {
-  if (_timerRunning) {
-    SDL_RemoveTimer(_timerID);
-    _timerRunning = false;
-  }
   _tetromino.reset();
-  _tetromino	= _nextTetromino;
-  if (gameOver() == true)
-    reset();
-  else {
-    _nextTetromino	= tetrominos[_rg.i_between(0, tetrominos.size() - 1)];
-    _timerID		= SDL_AddTimer(_current_time, __c_auto_move_down, this);
-    _timerRunning	= true;
-    _current_time	-= 2;
-    _rendering.drawNextTetromino(_nextTetromino);
-  }
+  _tetromino		= _nextTetromino;
+  _nextTetromino	= tetrominos[_rg.i_between(0, tetrominos.size() - 1)];
+  _current_time	-= 2;
+  _rendering.drawNextTetromino(_nextTetromino);
 }
 
 void	Tetris::fast_placing() {
-  SDL_RemoveTimer(_timerID);
-  _timerRunning = false;
+  unsigned int currentTime, lastTime = 0;
+
   do {
+    currentTime = SDL_GetTicks();
+    if (currentTime <= lastTime + FAST_PLACING_REFRESH_RATE)
+      continue;
+    lastTime = currentTime;
     move_down();
     if (_moved == true) {
       _rendering.clearPreviousTetromino(_tetromino);
@@ -153,7 +129,6 @@ void	Tetris::fast_placing() {
       _rendering.refresh();
     }
   } while (_moved == true);
-  _moved = true;
 }
 
 /*
@@ -175,7 +150,6 @@ void	Tetris::move_left() {
 ** move current tetromino right
 ** @return wether the tetromino has moves
 */
-
 void	Tetris::move_right() {
   for (const auto &block : _tetromino._blocks)
     if (block.x >= H_CELL_NUMBER - 1 || _board[block.x + 1][block.y] != WHITE)
@@ -201,20 +175,33 @@ void		Tetris::rotate() {
 void		Tetris::run() {
   SDL_Event	e;
   bool		quit(false);
+  unsigned int	lastTime = 0, autoMoveTime = 0, currentTime;
 
-  new_tetromino();
-  while (quit == false && SDL_WaitEvent(&e) >= 0) {
-    if (e.type == SDL_QUIT)
-      quit = true;
-    else if (e.type == SDL_KEYDOWN && _functions.count(e.key.keysym.sym) > 0) {
-      _functions.at(e.key.keysym.sym)();
-      if (_moved) {
-	_rendering.clearPreviousTetromino(_tetromino);
-	_rendering.drawCurrentTetromino(_tetromino);
-	_rendering.refresh();
-	_moved = false;
-      }
+  reset();
+  do {
+    while (SDL_PollEvent(&e)) {
+      if (e.type == SDL_QUIT)
+	quit = true;
+      currentTime = SDL_GetTicks();
+      if (currentTime <= lastTime + _refreshRate)
+	continue;
+      if (e.type == SDL_KEYDOWN && _functions.count(e.key.keysym.sym) > 0)
+	_functions.at(e.key.keysym.sym)();
+      lastTime = currentTime;
     }
-  }
-  SDL_RemoveTimer(_timerID);
+    currentTime = SDL_GetTicks();
+    if (currentTime > autoMoveTime + _current_time) {
+      move_down();
+      autoMoveTime = currentTime;
+    }
+    if (_moved) {
+      _rendering.clearPreviousTetromino(_tetromino);
+      _rendering.drawCurrentTetromino(_tetromino);
+      _rendering.refresh();
+    }
+    else if (gameOver())
+      reset();
+    _moved = false;
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+  } while (quit == false);
 }

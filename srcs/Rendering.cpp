@@ -1,4 +1,5 @@
 #include "Rendering.hh"
+#include <iostream>
 
 Rendering::Rendering() {
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_EVENTS | SDL_INIT_AUDIO) < 0)
